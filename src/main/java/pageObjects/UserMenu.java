@@ -18,4 +18,9 @@ public class UserMenu {
 
     @FindBy(xpath = "//span[contains(text(), 'Выйти из сервисов Яндекса')]")
     public WebElement exitButton;
+
+    public void logout() {
+        userButton.click();
+        exitButton.click();
+    }
 }

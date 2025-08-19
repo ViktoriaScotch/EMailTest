@@ -1,21 +1,32 @@
+import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import pageObjects.Inbox;
+import pageObjects.LoginPage;
+import pageObjects.Mail;
+import pageObjects.UserMenu;
 
-public class CheckEmailExist extends Steps{
+public class CheckEmailExistsTest {
 
     @Test
     public void checkEmail() {
-        openPage("https://mail.yandex.ru/");
-        checkTabNameContains("Яндекс.Почта");
+        ChromeDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        LoginPage loginPage = new LoginPage(driver);
+        UserMenu userMenu = new UserMenu(driver);
+        Mail mail = new Mail(driver);
+        Inbox inbox = new Inbox(driver);
 
-        loginByUser("avtotest.avtotestov@yandex.ru");
-        checkTabNameContains("Входящие — Яндекс.Почта");
+        loginPage.open();
+        loginPage.loginByUser("avtotest.avtotestov@yandex.ru");
 
-        clickOnElementCollectionByNumber(TableColumns.SUBJECT, 1);
-        checkTabNameContains("Письмо");
-        checkFieldValue(mail.subjectText, "Тест");
-        checkFieldValue(mail.senderNameText, "Виктория Халимонова");
-        checkFieldValue(mail.senderEmailText, "vkhalimonova@yandex.ru");
-        checkFieldValue(mail.contentText, "Автоматизировать тестовый сценарий с помощью Selenium WebDriver.\n" +
+        inbox.clickOnEmailSubjectByNumber(1);
+        Assert.assertEquals("Тест", mail.subjectText.getText());
+        Assert.assertEquals("Виктория Халимонова", mail.senderNameText.getText());
+        Assert.assertEquals("vkhalimonova@yandex.ru", mail.senderEmailText.getText());
+        Assert.assertEquals("Автоматизировать тестовый сценарий с помощью Selenium WebDriver.\n" +
                 "1) Открыть страницу почтового сервера; \n" +
                 "2) Залогиниться под заранее подготовленным пользователем;\n" +
                 "3) Найти и открыть заранее подготовленное письмо из списка Входящих;\n" +
@@ -29,9 +40,8 @@ public class CheckEmailExist extends Steps{
                 "- «живучесть» сценария (обработка ошибок и исключений). Желательно, чтобы в случае ошибки был снят и сохранен скриншот.\n" +
                 "Ожидается что будете использовать Selenium или обертки над ним (например, Selenide). \n" +
                 "Также для описания тестовых сценариев можно воспользоваться инструментом Cucumber (не обязательно).\n" +
-                "Выполненное тестовое выложите, пожалуйста, в публичный репозиторий на Github.");
-
-        logout();
-        checkTabName("Авторизация");
+                "Выполненное тестовое выложите, пожалуйста, в публичный репозиторий на Github.", mail.contentText.getText());
+        userMenu.logout();
+        Assert.assertTrue(wait.until(ExpectedConditions.titleIs("Авторизация")));
     }
 }
